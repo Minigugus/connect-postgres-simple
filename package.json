@@ -2,6 +2,8 @@
   "version": "0.1.0",
   "private": true,
   "main": "index.js",
+  "type": "commonjs",
+  "types": "index.d.ts",
   "author": "Minigugus <43109623+Minigugus@users.noreply.github.com>",
   "scripts": {
     "build": "rollup -c"
