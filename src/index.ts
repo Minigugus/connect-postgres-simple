@@ -29,7 +29,9 @@ declare class PostgresStore extends ExpressSession.Store {
   pruneSessions(callback?: (err?: any) => void): Promise<void>;
 }
 
-export type { PostgresStore };
+type PostgresStoreCtor = typeof PostgresStore;
+
+export type { PostgresStore, PostgresStoreCtor };
 
 type EventEmitterOptions = NonNullable<((typeof EventEmitter) extends new (options: infer R) => any ? R : never)>;
 
