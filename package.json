@@ -1,0 +1,20 @@
+{
+  "version": "0.1.0",
+  "private": true,
+  "main": "index.js",
+  "author": "Minigugus <43109623+Minigugus@users.noreply.github.com>",
+  "scripts": {
+    "build": "rollup -c"
+  },
+  "name": "connect-postgres-simple",
+  "description": "A simple, minimal PostgreSQL session store for Connect/Express using postgres.js",
+  "license": "MIT",
+  "devDependencies": {
+    "@types/express-session": "^1.17.4",
+    "@types/node": "^16.11.0",
+    "postgres": "^2.0.0-beta.10",
+    "rollup": "^2.58.0",
+    "rollup-plugin-typescript2": "^0.30.0",
+    "typescript": "^4.4.4"
+  }
+}

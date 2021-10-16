@@ -1,0 +1,7 @@
+*
+
+!/dist/*
+!/index.js
+!/table.sql
+!/package.json
+!/README.md
