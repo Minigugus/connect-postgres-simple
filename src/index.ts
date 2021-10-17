@@ -3,7 +3,7 @@ import type * as ExpressSession from 'express-session'
 import type { EventEmitter } from 'node:events'
 
 export interface PostgresStoreOptions extends EventEmitterOptions {
-  postgres?: Sql<any>;
+  postgres: Sql<any>;
   tableName?: string;
   schemaName?: string;
   ttl?: number;
@@ -15,7 +15,7 @@ export interface PostgresStoreOptions extends EventEmitterOptions {
 }
 
 declare class PostgresStore extends ExpressSession.Store {
-  constructor(options?: PostgresStoreOptions);
+  constructor(options: PostgresStoreOptions);
 
   get(sid: string, callback: (err: any, session?: ExpressSession.SessionData | null) => void): void;
   set(sid: string, session: ExpressSession.SessionData, callback?: (err?: any) => void): void;
@@ -52,9 +52,9 @@ export default ({ Store }: typeof import('express-session')): typeof PostgresSto
   private tableCreationPromise: Promise<unknown> | null = null;
   private closed: boolean = false;
 
-  public constructor(options: PostgresStoreOptions = {}) {
+  public constructor(options: PostgresStoreOptions) {
     super(options);
-    this.sql = options.postgres ?? require('postgres')();
+    this.sql = options.postgres;
     this.tableName = options.tableName ?? 'session'
     if (options.schemaName !== undefined)
       this.tableName = `${options.schemaName}.${this.tableName}`;

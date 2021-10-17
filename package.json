@@ -1,16 +1,33 @@
 {
-  "version": "0.1.0",
+  "name": "connect-postgres-simple",
+  "description": "A simple, minimal PostgreSQL session store for Connect/Express using postgres.js",
+  "license": "MIT",
+  "version": "0.2.0",
   "main": "index.js",
   "type": "commonjs",
   "types": "index.d.ts",
-  "author": "Minigugus <https://github.com/Minigugus>",
   "scripts": {
     "build": "rollup -c",
     "prepublishOnly": "rollup -c"
   },
-  "name": "connect-postgres-simple",
-  "description": "A simple, minimal PostgreSQL session store for Connect/Express using postgres.js",
-  "license": "MIT",
+  "homepage": "https://github.com/Minigugus/connect-postgres-simple#readme",
+  "repository": {
+    "type": "git",
+    "url": "git://github.com/Minigugus/connect-postgres-simple.git"
+  },
+  "bugs": {
+    "url": "https://github.com/Minigugus/connect-postgres-simple/issues"
+  },
+  "author": {
+    "name": "Minigugus",
+    "url": "https://github.com/Minigugus"
+  },
+  "maintainers": [
+    {
+      "name": "Minigugus",
+      "url": "https://github.com/Minigugus"
+    }
+  ],
   "devDependencies": {
     "@types/express-session": "^1.17.4",
     "@types/node": "^16.11.0",

@@ -3,7 +3,7 @@ import type { Sql } from 'postgres';
 import type * as ExpressSession from 'express-session';
 import type { EventEmitter } from 'node:events';
 export interface PostgresStoreOptions extends EventEmitterOptions {
-    postgres?: Sql<any>;
+    postgres: Sql<any>;
     tableName?: string;
     schemaName?: string;
     ttl?: number;
@@ -14,7 +14,7 @@ export interface PostgresStoreOptions extends EventEmitterOptions {
     errorLog?: (message: string, err: unknown) => void;
 }
 declare class PostgresStore extends ExpressSession.Store {
-    constructor(options?: PostgresStoreOptions);
+    constructor(options: PostgresStoreOptions);
     get(sid: string, callback: (err: any, session?: ExpressSession.SessionData | null) => void): void;
     set(sid: string, session: ExpressSession.SessionData, callback?: (err?: any) => void): void;
     destroy(sid: string, callback?: (err?: any) => void): void;

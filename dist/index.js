@@ -4,21 +4,21 @@ Object.defineProperty(exports, '__esModule', { value: true });
 
 const delayUnref = (duration) => new Promise(res => setTimeout(res, duration).unref());
 var index = ({ Store }) => class PostgresStore extends Store {
-    constructor(options = {}) {
-        var _a, _b, _c, _d, _e, _f;
+    constructor(options) {
+        var _a, _b, _c, _d, _e;
         super(options);
         this.tableCreationPromise = null;
         this.closed = false;
-        this.sql = (_a = options.postgres) !== null && _a !== void 0 ? _a : require('postgres')();
-        this.tableName = (_b = options.tableName) !== null && _b !== void 0 ? _b : 'session';
+        this.sql = options.postgres;
+        this.tableName = (_a = options.tableName) !== null && _a !== void 0 ? _a : 'session';
         if (options.schemaName !== undefined)
             this.tableName = `${options.schemaName}.${this.tableName}`;
         this.tableNameHelper = this.sql(this.tableName);
-        this.ttl = (_c = options.ttl) !== null && _c !== void 0 ? _c : 86400;
+        this.ttl = (_b = options.ttl) !== null && _b !== void 0 ? _b : 86400;
         this.tableCreationPromise = !options.createTableIfMissing
             ? Promise.resolve()
             : null;
-        this.disableTouch = (_d = options.disableTouch) !== null && _d !== void 0 ? _d : false;
+        this.disableTouch = (_c = options.disableTouch) !== null && _c !== void 0 ? _c : false;
         if (options.pruneSessionInterval !== false)
             (async (interval, randomize, errorLog) => {
                 while (!this.closed) {
@@ -31,10 +31,10 @@ var index = ({ Store }) => class PostgresStore extends Store {
                         errorLog('Failed to prune sessions:', err);
                     }
                 }
-            })(((_e = options.pruneSessionInterval) !== null && _e !== void 0 ? _e : 60 * 15) * 1000, options.pruneSessionRandomizedInterval !== false ? options.pruneSessionRandomizedInterval !== undefined
+            })(((_d = options.pruneSessionInterval) !== null && _d !== void 0 ? _d : 60 * 15) * 1000, options.pruneSessionRandomizedInterval !== false ? options.pruneSessionRandomizedInterval !== undefined
                 ? options.pruneSessionRandomizedInterval
                 : ((delay) => Math.ceil(delay / 2 + delay * Math.random()))
-                : ((delay) => delay), (_f = options.errorLog) !== null && _f !== void 0 ? _f : console.error.bind(console));
+                : ((delay) => delay), (_e = options.errorLog) !== null && _e !== void 0 ? _e : console.error.bind(console));
     }
     async beforeDatabaseAccess() {
         if (this.closed)
