@@ -11,7 +11,7 @@ A simple, minimal PostgreSQL session store for Express/Connect using [`postgres`
 ## Installation
 
 ```bash
-npm install https://github.com/Minigugus/connect-postgres-simple
+npm install connect-postgres-simple
 ```
 
 **Once npm installed the module, you need to create the _"session"_ table in your database.**
