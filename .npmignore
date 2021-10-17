@@ -1,7 +1,9 @@
 *
 
 !/dist/*
+!/index.d.ts
 !/index.js
 !/table.sql
 !/package.json
 !/README.md
+!/LICENSE

@@ -1,12 +1,12 @@
 {
   "version": "0.1.0",
-  "private": true,
   "main": "index.js",
   "type": "commonjs",
   "types": "index.d.ts",
   "author": "Minigugus <https://github.com/Minigugus>",
   "scripts": {
-    "build": "rollup -c"
+    "build": "rollup -c",
+    "prepublishOnly": "rollup -c"
   },
   "name": "connect-postgres-simple",
   "description": "A simple, minimal PostgreSQL session store for Connect/Express using postgres.js",
