@@ -1,4 +1,4 @@
-import type { Sql } from 'postgres'
+import type { Sql, Helper } from 'postgres'
 import type * as ExpressSession from 'express-session'
 import type { EventEmitter } from 'node:events'
 
@@ -44,8 +44,9 @@ interface PostgresSession {
 const delayUnref = (duration: number) => new Promise(res => setTimeout(res, duration).unref());
 
 export default ({ Store }: typeof import('express-session')): typeof PostgresStore => class PostgresStore extends Store implements ExpressSession.Store {
-  private postgres: Sql<any>;
+  private sql: Sql<any>;
   private tableName: string;
+  private tableNameHelper: Helper<string>;
   private ttl: number;
   private disableTouch: boolean;
   private tableCreationPromise: Promise<unknown> | null = null;
@@ -53,10 +54,11 @@ export default ({ Store }: typeof import('express-session')): typeof PostgresSto
 
   public constructor(options: PostgresStoreOptions = {}) {
     super(options);
-    this.postgres = options.postgres ?? require('postgres')();
+    this.sql = options.postgres ?? require('postgres')();
     this.tableName = options.tableName ?? 'session'
     if (options.schemaName !== undefined)
       this.tableName = `${options.schemaName}.${this.tableName}`;
+    this.tableNameHelper = this.sql(this.tableName);
     this.ttl = options.ttl ?? 86400; // One day by default
     this.tableCreationPromise = !options.createTableIfMissing
       ? Promise.resolve() // disable lazy-loading
@@ -96,7 +98,7 @@ export default ({ Store }: typeof import('express-session')): typeof PostgresSto
     // this is the first call to `createTableIfNeeded()`
     if (this.tableCreationPromise === null)
       this.tableCreationPromise =
-        this.postgres<[{ result: object | null }]>`SELECT to_regclass(${this.tableName}::text) AS result`
+        this.sql<[{ result: object | null }]>`SELECT to_regclass(${this.tableName}::text) AS result`
           .catch(() => [{ result: null }])
           .then(async ([{ result }]) => {
             if (result !== null) // table exists
@@ -116,7 +118,7 @@ export default ({ Store }: typeof import('express-session')): typeof PostgresSto
 
             const createTable = await require('fs').promises.readFile(tableFile, 'utf8');
 
-            await this.postgres.unsafe(
+            await this.sql.unsafe(
               createTable
                 .replace(/"session"/g, escapedTableName)
             );
@@ -135,8 +137,8 @@ export default ({ Store }: typeof import('express-session')): typeof PostgresSto
     const now = new Date(Math.ceil(Date.now() / 1000) * 1000);
     try {
       await this.beforeDatabaseAccess();
-      await this.postgres`
-        DELETE FROM ${this.postgres(this.tableName)}
+      await this.sql`
+        DELETE FROM ${this.tableNameHelper}
         WHERE expire < ${now}
       `
       callback();
@@ -149,15 +151,15 @@ export default ({ Store }: typeof import('express-session')): typeof PostgresSto
     if (this.closed)
       return;
     this.closed = true;
-    await this.postgres.end();
+    await this.sql.end();
   }
 
   async get(sid: string, callback: (err: any, session?: ExpressSession.SessionData | null) => void) {
     try {
       await this.beforeDatabaseAccess();
-      const [{ sess } = { sess: null }] = await this.postgres<[Pick<PostgresSession, 'sess'>?]>`
+      const [{ sess } = { sess: null }] = await this.sql<[Pick<PostgresSession, 'sess'>?]>`
         SELECT sess
-        FROM ${this.postgres(this.tableName)}
+        FROM ${this.tableNameHelper}
         WHERE sid = ${sid}
       `;
       callback(null, sess);
@@ -169,10 +171,10 @@ export default ({ Store }: typeof import('express-session')): typeof PostgresSto
   async set(sid: string, session: ExpressSession.SessionData, callback?: (err?: any) => void) {
     try {
       await this.beforeDatabaseAccess();
-      const sess = this.postgres.json(session);
+      const sess = this.sql.json(session);
       const expire = this.getExpireTime(session);
-      await this.postgres`
-        INSERT INTO ${this.postgres(this.tableName)} (sess, expire, sid)
+      await this.sql`
+        INSERT INTO ${this.tableNameHelper} (sess, expire, sid)
         VALUES (${sess}, ${expire}, ${sid})
         ON CONFLICT (sid) DO UPDATE
         SET sess = ${sess}, expire = ${expire}
@@ -186,8 +188,8 @@ export default ({ Store }: typeof import('express-session')): typeof PostgresSto
   async destroy(sid: string, callback?: (err?: any) => void) {
     try {
       await this.beforeDatabaseAccess();
-      await this.postgres`
-        DELETE FROM ${this.postgres(this.tableName)}
+      await this.sql`
+        DELETE FROM ${this.tableNameHelper}
         WHERE sid = ${sid}
       `;
       callback?.();
@@ -200,8 +202,8 @@ export default ({ Store }: typeof import('express-session')): typeof PostgresSto
     try {
       await this.beforeDatabaseAccess();
       const sessions: ExpressSession.SessionData[] = [];
-      await this.postgres<Pick<PostgresSession, 'sess'>[]>`
-        SELECT sess FROM ${this.postgres(this.tableName)}
+      await this.sql<Pick<PostgresSession, 'sess'>[]>`
+        SELECT sess FROM ${this.tableNameHelper}
       `
         .stream(({ sess }) => sessions.push(sess))
       callback(null, sessions);
@@ -213,9 +215,9 @@ export default ({ Store }: typeof import('express-session')): typeof PostgresSto
   async length(callback: (err: any, length: number) => void) {
     try {
       await this.beforeDatabaseAccess();
-      const [{ length }] = await this.postgres<[{ length: number }]>`
+      const [{ length }] = await this.sql<[{ length: number }]>`
         SELECT COUNT(sid) AS length
-        FROM ${this.postgres(this.tableName)}
+        FROM ${this.tableNameHelper}
       `
       callback(null, length);
     } catch (err) {
@@ -226,8 +228,8 @@ export default ({ Store }: typeof import('express-session')): typeof PostgresSto
   async clear(callback?: (err?: any) => void) {
     try {
       await this.beforeDatabaseAccess();
-      await this.postgres`
-        DELETE FROM ${this.postgres(this.tableName)}
+      await this.sql`
+        DELETE FROM ${this.tableNameHelper}
       `;
       callback?.();
     } catch (err) {
@@ -239,9 +241,8 @@ export default ({ Store }: typeof import('express-session')): typeof PostgresSto
     if (!this.disableTouch)
       try {
         await this.beforeDatabaseAccess();
-        // SET expire = ${new Date((Math.ceil(Date.now() / 1000) + this.ttl) * 1000)}
-        const res = await this.postgres`
-          UPDATE ${this.postgres(this.tableName)}
+        await this.sql`
+          UPDATE ${this.tableNameHelper}
           SET expire = ${this.getExpireTime(session)}
           WHERE sid = ${sid}
         `;

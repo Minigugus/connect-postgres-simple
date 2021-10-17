@@ -4,7 +4,7 @@
   "main": "index.js",
   "type": "commonjs",
   "types": "index.d.ts",
-  "author": "Minigugus <43109623+Minigugus@users.noreply.github.com>",
+  "author": "Minigugus <https://github.com/Minigugus>",
   "scripts": {
     "build": "rollup -c"
   },

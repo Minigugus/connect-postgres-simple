@@ -1,8 +1,13 @@
-declare function postgresStore({ Store }: typeof import('express-session')): import('./dist/index').PostgresStoreCtor;
+import {
+  PostgresStore,
+  PostgresStoreCtor,
+  PostgresStoreOptions
+} from './dist/index';
 
-declare namespace postgresStore {
-  export type PostgresStore = import('./dist/index').PostgresStore;
-  export type PostgresStoreOptions = import('./dist/index').PostgresStoreOptions;
+declare function connectPostgresSimple({ Store }: typeof import('express-session')): PostgresStoreCtor;
+
+declare namespace connectPostgresSimple {
+  export type { PostgresStore, PostgresStoreOptions }
 }
 
-export = postgresStore;
+export = connectPostgresSimple;

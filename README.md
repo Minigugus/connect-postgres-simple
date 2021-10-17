@@ -1,7 +1,10 @@
 # Connect Postgres Simple
 
 > Like [`connect-pg-simple`](https://github.com/voxpelli/node-connect-pg-simple) but using [`postgres`](https://npmjs.com/package/postgres) instead of [`pg`](https://npmjs.com/package/pg).
-> The API surface is mostly preserved (some `pg`-specific properties are removed).
+>
+> Strong compatibility with `connect-pg-simple`:
+>  * Can be used on the same sql table at the same time
+>  * Same configuration options (expected `pg` related properties that were removed)
 
 A simple, minimal PostgreSQL session store for Express/Connect using [`postgres`](https://npmjs.com/package/postgres)
 
@@ -50,15 +53,15 @@ Advanced example showing some custom options:
 ```javascript
 const postgres = require('postgres');
 const expressSession = require('express-session');
-const pgSession = require('connect-postgres-simple')(expressSession);
+const PostgresStore = require('connect-postgres-simple')(expressSession);
 
 const postgres = postgres({
     // Insert postgres options here
 });
 
 app.use(expressSession({
-  store: new pgSession({
-    postgres : postgres,          // Connection pool
+  store: new PostgresStore({
+    postgres : postgres,          // Template string tag from postgres
     tableName : 'user_sessions'   // Use another table-name than the default "session" one
     // Insert connect-postgres-simple options here
   }),
@@ -74,7 +77,7 @@ app.use(expressSession({
 
 ### Connection options
 
-* **postgres** - Sql template string tag provided by `postgres` to be used for DB communications.
+* **postgres** - sql template string tag provided by `postgres` to be used for DB communications.
 
 ### Other options
 
@@ -94,10 +97,4 @@ app.use(expressSession({
 
 ## License
 
-[![FOSSA Status](https://app.fossa.io/api/projects/git%2Bgithub.com%2Fvoxpelli%2Fnode-connect-postgres-simple.svg?type=large)](https://app.fossa.io/projects/git%2Bgithub.com%2Fvoxpelli%2Fnode-connect-postgres-simple?ref=badge_large)
-
-## For enterprise
-
-Available as part of the Tidelift Subscription.
-
-The maintainers of connect-postgres-simple and thousands of other packages are working with Tidelift to deliver commercial support and maintenance for the open source packages you use to build your applications. Save time, reduce risk, and improve code health, while paying the maintainers of the exact packages you use. [Learn more.](https://tidelift.com/subscription/pkg/npm-connect-postgres-simple?utm_source=npm-connect-postgres-simple&utm_medium=referral&utm_campaign=enterprise&utm_term=repo)
+[The MIT license](./LICENSE)
