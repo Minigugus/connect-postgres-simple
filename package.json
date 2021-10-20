@@ -10,6 +10,13 @@
     "build": "rollup -c",
     "prepublishOnly": "rollup -c"
   },
+  "keywords": [
+    "connect",
+    "express",
+    "session",
+    "postgres",
+    "postgresql"
+  ],
   "homepage": "https://github.com/Minigugus/connect-postgres-simple#readme",
   "repository": {
     "type": "git",

@@ -55,13 +55,13 @@ const postgres = require('postgres');
 const expressSession = require('express-session');
 const PostgresStore = require('connect-postgres-simple')(expressSession);
 
-const postgres = postgres({
+const sql = postgres({
     // Insert postgres options here
 });
 
 app.use(expressSession({
   store: new PostgresStore({
-    postgres : postgres,          // Template string tag from postgres
+    postgres : sql,               // Template string tag from postgres
     tableName : 'user_sessions'   // Use another table-name than the default "session" one
     // Insert connect-postgres-simple options here
   }),
