@@ -111,10 +111,7 @@ export default ({ Store }: typeof import('express-session')): typeof PostgresSto
             // to /dist/index.js but we need /table.sql 
             const tableFile = require('path').resolve(__dirname, '../table.sql');
 
-            const escapedTableName =
-              this.tableName
-                .replace(/"/g, '""')
-                .replace(/^([^"]+)""\.""([^"]+)$/, '$1"."$2');
+            const escapedTableName = `"${this.tableName.replace(/"/g, '""').replace(/\./g, '"."')}"`;
 
             const createTable = await require('fs').promises.readFile(tableFile, 'utf8');
 

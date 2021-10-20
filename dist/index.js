@@ -47,9 +47,7 @@ var index = ({ Store }) => class PostgresStore extends Store {
                     if (result !== null)
                         return;
                     const tableFile = require('path').resolve(__dirname, '../table.sql');
-                    const escapedTableName = this.tableName
-                        .replace(/"/g, '""')
-                        .replace(/^([^"]+)""\.""([^"]+)$/, '$1"."$2');
+                    const escapedTableName = `"${this.tableName.replace(/"/g, '""').replace(/\./g, '"."')}"`;
                     const createTable = await require('fs').promises.readFile(tableFile, 'utf8');
                     await this.sql.unsafe(createTable
                         .replace(/"session"/g, escapedTableName));

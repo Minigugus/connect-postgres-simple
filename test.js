@@ -18,6 +18,8 @@ app.use(session({
   },
   store: new PostgresStore({
     postgres: postgres(),
+    tableName: 'wtf',
+    schemaName: 'wut',
     createTableIfMissing: true,
     pruneSessionInterval: 10
   })
